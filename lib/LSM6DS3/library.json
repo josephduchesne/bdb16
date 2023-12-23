@@ -1,0 +1,9 @@
+{
+  "name": "LSM6DS3",
+  "version": "1.0.2",
+  "description": "Slightly modified version of Arduino_LSM6DS3",
+  "keywords": "LSM6DS3",
+  "license": "LGPL",
+  "frameworks": "*",
+  "platforms": "*"
+}
