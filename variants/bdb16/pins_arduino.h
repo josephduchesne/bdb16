@@ -41,10 +41,10 @@ static const uint8_t DS3 = (9u);
 #define PIN_SPI0_SCK   (10u)
 #define PIN_SPI0_SS    PIN_SPI0_CS0
 
-// #define PIN_SPI1_MISO  (12u)
-// #define PIN_SPI1_MOSI  (15u)
-// #define PIN_SPI1_SCK   (14u)
-// #define PIN_SPI1_SS    (13u)
+#define PIN_SPI1_MISO  (12u)
+#define PIN_SPI1_MOSI  (11u)
+#define PIN_SPI1_SCK   (10u)
+#define PIN_SPI1_SS    (PIN_SPI0_CS0)
 
 // Wire
 #define PIN_WIRE0_SDA  (24u)
