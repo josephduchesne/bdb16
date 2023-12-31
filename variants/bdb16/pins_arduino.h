@@ -29,11 +29,11 @@ static const uint8_t DS3 = (9u);
 #define PIN_SPI0_CS2 (18u)
 
 // Serial
-#define PIN_SERIAL1_TX (0u)
-#define PIN_SERIAL1_RX (1u)
+#define PIN_SERIAL1_TX (16u)
+#define PIN_SERIAL1_RX (17u)
 
-#define PIN_SERIAL2_TX (16u)
-#define PIN_SERIAL2_RX (17u)
+#define PIN_SERIAL2_TX (4u)
+#define PIN_SERIAL2_RX (5u)
 
 // SPI
 #define PIN_SPI0_MISO  (12u)

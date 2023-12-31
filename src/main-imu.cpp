@@ -28,6 +28,7 @@ void setup() {
   }
 
   pinMode(LED_BUILTIN, OUTPUT);
+  analogWriteResolution(8);
 
   Serial1.print("Accelerometer sample rate = ");
   Serial1.print(IMU.accelerationSampleRate());
@@ -49,6 +50,6 @@ void loop() {
     Serial1.print('\t');
     Serial1.println(z);
 
-    analogWrite(LED_BUILTIN, (uint16_t)(z*1024));
+    analogWrite(LED_BUILTIN, (uint16_t)(z*255.0));
   }
 }
