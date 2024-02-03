@@ -53,7 +53,7 @@ static const uint8_t DS3 = (9u);
 #define PIN_WIRE1_SDA  (24u)
 #define PIN_WIRE1_SCL  (25u)
 
-#define SERIAL_HOWMANY (2u)
+#define SERIAL_HOWMANY (3u)
 #define SPI_HOWMANY    (1u)
 #define WIRE_HOWMANY   (1u)
 

@@ -19,10 +19,10 @@
 //LSM6DS3Class IMU_LSM6DS3(Wire, LSM6DS3_ADDRESS);
 
 void setup() {
-  Serial1.begin(115200);
+  Serial2.begin(115200);
 
   if (!IMU.begin()) {
-    Serial1.println("Failed to initialize IMU!");
+    Serial2.println("Failed to initialize IMU!");
 
     while (1);
   }
@@ -30,12 +30,12 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   analogWriteResolution(8);
 
-  Serial1.print("Accelerometer sample rate = ");
-  Serial1.print(IMU.accelerationSampleRate());
-  Serial1.println(" Hz");
-  Serial1.println();
-  Serial1.println("Acceleration in g's");
-  Serial1.println("X\tY\tZ");
+  Serial2.print("Accelerometer sample rate = ");
+  Serial2.print(IMU.accelerationSampleRate());
+  Serial2.println(" Hz");
+  Serial2.println();
+  Serial2.println("Acceleration in g's");
+  Serial2.println("X\tY\tZ");
 }
 
 void loop() {
@@ -44,11 +44,11 @@ void loop() {
   if (IMU.accelerationAvailable()) {
     IMU.readAcceleration(x, y, z);
 
-    Serial1.print(x);
-    Serial1.print('\t');
-    Serial1.print(y);
-    Serial1.print('\t');
-    Serial1.println(z);
+    Serial2.print(x);
+    Serial2.print('\t');
+    Serial2.print(y);
+    Serial2.print('\t');
+    Serial2.println(z);
 
     analogWrite(LED_BUILTIN, (uint16_t)(z*255.0));
   }

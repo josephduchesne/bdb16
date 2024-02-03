@@ -3,7 +3,7 @@
 // based on https://github.com/FastLED/FastLED/blob/master/examples/Fire2012/Fire2012.ino
 
 #include <FastLED.h>
-#define NUM_LEDS 8
+#define NUM_LEDS 16
 
 CRGB leds[NUM_LEDS];
 
@@ -11,11 +11,34 @@ CRGB leds[NUM_LEDS];
 #define SPARKING 55
 #define FRAMES_PER_SECOND 60
 bool gReverseDirection = false;
+uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   FastLED.addLeds<WS2811, PIN_RGB, GRB>(leds, NUM_LEDS);
+  //FastLED.setBrightness(5 );
 }
+
+void confetti() 
+{
+  // random colored speckles that blink in and fade smoothly
+  fadeToBlackBy( leds, NUM_LEDS, 10);
+  int pos = random16(NUM_LEDS);
+  leds[pos] += CHSV( gHue + random8(64), 200, 255);
+}
+
+void bpm()
+{
+  // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
+  uint8_t BeatsPerMinute = 62;
+  CRGBPalette16 palette = PartyColors_p;
+  uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
+  for( int i = 0; i < NUM_LEDS; i++) { //9948
+    leds[i] = ColorFromPalette(palette, gHue+(i*2), beat-gHue+(i*10));
+  }
+}
+
 
 void Fire2012()
 {
@@ -54,8 +77,11 @@ void Fire2012()
 void loop() {
   digitalWrite(LED_BUILTIN, (millis()%1000) > 500);
 
-  Fire2012(); // run simulation frame
-  
+  EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+
+
+  //Fire2012(); // run simulation frame
+  bpm();
   FastLED.show(); // display this frame
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
