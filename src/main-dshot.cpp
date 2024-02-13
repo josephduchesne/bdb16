@@ -62,7 +62,10 @@ void loop() {
     // decode any incoming telemetry
     DShot::ESC::processTelemetryQueue();
 
-    // todo: capture last telemetry time
+    // Todo: Set ESC on timer
+    // Todo: Timeout ESC if not set for too long
+    // Todo: Capture last telemetry time / time out telemetry validity
+
     if (millis()-last_print >= 250) {
         last_print = millis();
         for(auto& esc : escs) {
