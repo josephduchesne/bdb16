@@ -18,6 +18,9 @@ public:
     void update();  // called each loop
     void output();  // called once per output period
 
+    float left_ = 0;
+    float right_ = 0;
+
 private:
     void ArcadeToDifferential(int drive, int steer, float &left, float &right);
 

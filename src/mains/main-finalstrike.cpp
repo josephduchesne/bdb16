@@ -1,10 +1,8 @@
 #include <Arduino.h>
-#include <robots/FirstStrike.h>
+#include <robots/FinalStrike.h>
 #include <dshot/esc.h>
 #include <functional>   // std::reference_wrapper
 #include <CrsfSerial.h>
-
-// todo: move pole pair to 2nd argument
 
 static volatile bool alarm_fired;
 volatile float left, right;
@@ -13,10 +11,10 @@ struct repeating_timer timer;
 
 CrsfSerial radio(Serial1, CRSF_BAUDRATE);
 
-FirstStrike robot(radio, {
-                            DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 0.392f, false), // left drive
-                            DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 0.392f, false), // right drive
-                            DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
+FinalStrike robot(radio, {
+                            DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 0.554f, true),  // left drive
+                            DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 0.554f, false), // right drive
+                            DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false)  // weapon
                         });
 
 unsigned long packets = 0;

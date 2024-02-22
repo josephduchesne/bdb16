@@ -11,36 +11,37 @@ void DifferentialRobot::update() {
 
     DShot::ESC::processTelemetryQueue();
 
+
+
+        if (radio_.isLinkUp()) {
+
+            // handle the arcade steering on channels 1 and 2
+            int ch1_in, ch2_in;
+            ch1_in = radio_.getChannel(1);
+            ch2_in = radio_.getChannel(2);
+            if (ch1_in > 1485 && ch1_in < 1515) ch1_in = 1500;  // Add a small deadband
+            if (ch2_in > 1485 && ch2_in < 1515) ch2_in = 1500;  // Add a small deadband
+            ArcadeToDifferential(ch1_in, ch2_in, left_, right_);
+
+        } else {  // radio is down
+            left_ = 0.0f;
+            right_ = 0.0f;
+        }
+
+}
+
+void DifferentialRobot::output() {
+    Robot::output();
+
     if (millis() < 7000) {
         for(auto& esc : escs_) {
             if (millis()< 6000) esc.setCommand(0);  // 1046 is the example command
             else if (millis() < 7000) esc.setCommand(13);  // extended telemetry enable
         }
     } else {
-
-        if (radio_.isLinkUp()) {
-
-            // handle the arcade steering on channels 1 and 2
-            float left, right;
-            int ch1_in, ch2_in;
-            ch1_in = radio_.getChannel(1);
-            ch2_in = radio_.getChannel(2);
-            if (ch1_in > 1485 && ch1_in < 1515) ch1_in = 1500;  // Add a small deadband
-            if (ch2_in > 1485 && ch2_in < 1515) ch2_in = 1500;  // Add a small deadband
-            ArcadeToDifferential(ch1_in, ch2_in, left, right);
-            escs_[0].setThrottle3D(left);
-            escs_[1].setThrottle3D(right);
-
-        } else {  // radio is down
-            escs_[0].setCommand(0);
-            escs_[1].setCommand(0);
-        }
+        escs_[0].setThrottle3D(left_);
+        escs_[1].setThrottle3D(right_);
     }
-
-}
-
-void DifferentialRobot::output() {
-    Robot::output();
 }
 
 void DifferentialRobot::ArcadeToDifferential(int drive, int steer, float &left, float &right) {
