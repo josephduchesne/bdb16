@@ -63,7 +63,7 @@ void FirstStrike::update() {
     // }
 
     // esc telemetry?
-    //SEGGER_RTT_printf(0, "Telemetry: %d?\n", Serial.available());
+    //SEGGER_RTT_printf(0, "Telemetry: %d?\n", Serial2.available());
     //print_telemetry();
 }
 

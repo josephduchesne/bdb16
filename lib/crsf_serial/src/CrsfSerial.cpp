@@ -11,9 +11,9 @@
 //         while (len > 0 && linepos < 16)
 //         {
 //             if (*data < 0x0f)
-//             Serial.write('0');
-//             Serial.print(*data, HEX);
-//             Serial.write(' ');
+//             Serial2.write('0');
+//             Serial2.print(*data, HEX);
+//             Serial2.write(' ');
 //             ++data;
 //             ++linepos;
 //             --len;
@@ -21,12 +21,12 @@
 
 //         // Spacer to align last line
 //         for (uint8_t i = linepos; i < 16; ++i)
-//             Serial.print("   ");
+//             Serial2.print("   ");
 
 //         // ASCII part
 //         for (uint8_t i = 0; i < linepos; ++i)
-//             Serial.write((linestart[i] < ' ') ? '.' : linestart[i]);
-//         Serial.println();
+//             Serial2.write((linestart[i] < ' ') ? '.' : linestart[i]);
+//         Serial2.println();
 //     }
 // }
 

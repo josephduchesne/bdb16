@@ -2,7 +2,7 @@
 
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
-    Serial.begin(115200);
+    Serial2.begin(115200);
 }
 
 void loop() {
@@ -10,5 +10,5 @@ void loop() {
   delay(900);
   digitalWrite(LED_BUILTIN, LOW);
   delay(100);
-  Serial.write("Hello World!\n");
+  Serial2.write("Hello World!\n");
 }
