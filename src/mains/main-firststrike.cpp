@@ -13,11 +13,25 @@ struct repeating_timer timer;
 
 CrsfSerial radio(Serial1, CRSF_BAUDRATE);
 
-FirstStrike robot(radio, {
-                            DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 0.392f, false), // left drive
-                            DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 0.392f, false), // right drive
-                            DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
-                        });
+
+DifferentialModel model(
+        0.04445f,       // wheel diameter (m)
+        0.1022f,        // wheel separation (m)
+        1400.0f/4.0f,   // effective kV (kV/gear reduction)
+        16.8f,          // Nominal Vbatt (V)
+        5.3f,           // max velocity (m/s)
+        8.47f,          // max acceleration (m/s^2)
+        25.2f,          // max angular velocity (rad/s)
+        111.4f          // max angular acceleration (rad/s^2)
+    );
+
+FirstStrike robot(  radio, 
+                    {
+                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // left drive
+                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // right drive
+                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
+                    },
+                    model);
 
 unsigned long packets = 0;
 void packetChannels() {packets++; }

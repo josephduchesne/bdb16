@@ -11,7 +11,7 @@
 class FirstStrike : public DifferentialRobot
 {
 public:
-    FirstStrike(CrsfSerial radio, const ChannelArray escs);
+    FirstStrike(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm);
 
     void init();
     void update();

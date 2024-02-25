@@ -1,6 +1,6 @@
 #include "robots/FirstStrike.h"
 
-FirstStrike::FirstStrike(CrsfSerial radio, const ChannelArray escs) : DifferentialRobot( radio, escs ) {}
+FirstStrike::FirstStrike(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm) : DifferentialRobot( radio, escs, dm ) {}
 
 void FirstStrike::init() {
     DifferentialRobot::init();
@@ -22,8 +22,8 @@ void FirstStrike::LEDs() {
             leds_[i] = ColorFromPalette(palette, (int8_t)((weapon_)*45.0f)+((num_leds_-i)*2), beat+((num_leds_-i)*10));
         }
         fadeToBlackBy( leds_, num_leds_, 50);
-        leds_[3-(int)(right_*3.7-0.5f)] = CHSV(0,128,255);//ColorFromPalette(palette, 90, 255);
-        leds_[8+4+(int)(left_*3.7-0.5f)] = CHSV(0,128,255);//ColorFromPalette(palette, 90, 255);
+        leds_[3-(int)(right_v_/model_.v_max*3.7-0.5f)] = CHSV(0,128,255);//ColorFromPalette(palette, 90, 255);
+        leds_[8+4+(int)(left_v_/model_.v_max*3.7-0.5f)] = CHSV(0,128,255);//ColorFromPalette(palette, 90, 255);
 
         // todo: weapon animation
     } else { // idle animation
@@ -70,7 +70,7 @@ void FirstStrike::update() {
 void FirstStrike::output() {
     DifferentialRobot::output();
 
-    if (millis() > 7000) {
+    if (millis() > 3000) {
         escs_[2].setThrottle3D(weapon_);
     }
 }

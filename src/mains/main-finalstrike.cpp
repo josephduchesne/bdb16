@@ -3,6 +3,7 @@
 #include <dshot/esc.h>
 #include <functional>   // std::reference_wrapper
 #include <CrsfSerial.h>
+#include <dynamics/DifferentialModel.h>
 
 static volatile bool alarm_fired;
 volatile float left, right;
@@ -11,11 +12,24 @@ struct repeating_timer timer;
 
 CrsfSerial radio(Serial1, CRSF_BAUDRATE);
 
-FinalStrike robot(radio, {
-                            DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 0.554f, true),  // left drive
-                            DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 0.554f, false), // right drive
-                            DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false)  // weapon
-                        });
+DifferentialModel model(
+        0.055f,         // wheel diameter (m)
+        0.152f,         // wheel separation (m)
+        1000.0f/5.0f,   // effective kV (kV/gear reduction)
+        16.8f,          // Nominal Vbatt (V)
+        5.3f,           // max velocity (m/s)
+        8.47f,          // max acceleration (m/s^2)
+        18.25f,         // max angular velocity (rad/s)
+        111.4f          // max angular acceleration (rad/s^2)
+    );
+
+FinalStrike robot(  radio,
+                    {
+                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, true),  // left drive
+                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive
+                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false)  // weapon
+                    },
+                    model);
 
 unsigned long packets = 0;
 void packetChannels() {packets++; }
@@ -61,10 +75,10 @@ void loop() {
         last_print = millis();
         for(auto& esc : robot.escs_) {
             DShot::Telemetry& telemetry = esc.telemetry;
-            // Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.get().pio_sm, telemetry.rpm, telemetry.temperature_C, 
-            //                 telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
-            //                 (float)telemetry.errors*100.0f/telemetry.reads);
+            Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.pio_sm, telemetry.rpm, telemetry.temperature_C, 
+                            telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
+                            (float)telemetry.errors*100.0f/telemetry.reads);
         }
-        //Serial2.println(crsf.isLinkUp());
+        Serial2.println(radio.isLinkUp());
     }
 }

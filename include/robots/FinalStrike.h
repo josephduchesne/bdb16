@@ -11,7 +11,7 @@
 class FinalStrike : public FirstStrike
 {
 public:
-    FinalStrike(CrsfSerial radio, const ChannelArray escs);
+    FinalStrike(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm);
 
     void init();
     // void update();
