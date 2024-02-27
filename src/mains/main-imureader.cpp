@@ -15,6 +15,7 @@
 */
 #include <Wire.h>
 #include <IMUReader.h>
+#include <etl/delegate.h>
 
 IMUReader imu_reader;
 
@@ -22,7 +23,7 @@ void setup() {
   Serial2.begin(115200);
   delay(500);
 
-  if (!imu_reader.start()) {
+  if (!imu_reader.start(IMUDelegate::create<IMUReader, &IMUReader::printData>(imu_reader))) {
     Serial2.println("Failed to initialize IMU!");
 
     while (1);
@@ -35,7 +36,7 @@ void loop() {
 
   if (imu_reader.read_loop()) {
     // Serial2.printf("int: %d\n", imu_reader.int_triggers);
-    imu_reader.printData(imu_reader.data);
+    //imu_reader.printData(imu_reader.data);
     // IMU.readAcceleration(x, y, z);
 
     // Serial2.print(x);

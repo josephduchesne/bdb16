@@ -12,10 +12,10 @@ IMUReader::IMUReader() :
     IMUReader::instance_ = this; // singleton for ISR access :/
 }
 
-bool IMUReader::start(/*edl::delegate<void(IMUData& data)> _data_callback*/) {
+bool IMUReader::start(IMUDelegate _data_callback) {
     auto status = imu.begin(0x6A);
 
-    //data_callback = _data_callback;
+    data_callback = _data_callback;
 
     if (status)  {
         Serial2.printf("> IMU Driver init failed: %d\n", status);
