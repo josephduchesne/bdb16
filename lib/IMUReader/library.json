@@ -1,0 +1,12 @@
+{
+    "name": "IMUReader",
+    "version": "1.0.0",
+    "description": "A wrapper for reading the LSM6DS3 fifo",
+    "keywords": "LSM6DS3",
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "dependencies": {
+      "LSM6DS3": "*"
+    }
+  }

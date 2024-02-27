@@ -23,7 +23,7 @@
     ],
     "mcu": "rp2040",
     "variant": "bdb16",
-    "filesystem_size": "14m"
+    "filesystem_size": "15.5m"
   },
   "debug": {
     "jlink_device": "RP2040_M0_0",

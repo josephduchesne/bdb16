@@ -1,5 +1,3 @@
-#pragma once
-
 #include "robots/Robot.h"
 
 Robot::Robot(CrsfSerial radio, const ChannelArray escs): radio_(radio), escs_{ escs } {

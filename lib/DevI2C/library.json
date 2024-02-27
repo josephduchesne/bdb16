@@ -1,0 +1,9 @@
+{
+    "name": "DevI2C",
+    "version": "1.0.0",
+    "description": "i2c helper class",
+    "keywords": "DevI2C",
+    "license": "BSD3",
+    "frameworks": "*",
+    "platforms": "*"
+  }

@@ -44,12 +44,14 @@ bool repeating_timer_callback(struct repeating_timer *t) {
 
 void setup() {
     Serial2.begin(115200);
+    delay(500); // slight pause to ensure Serial2 is connected PC side
 
     robot.init();
 
     radio.onPacketChannels = &packetChannels;
     Serial1.setFIFOSize(64);
     Serial1.begin(CRSF_BAUDRATE, SERIAL_8N1);
+    
     // Negative delay so means we will call repeating_timer_callback, and call it again
     // 500ms later regardless of how long the callback took to execute
     
