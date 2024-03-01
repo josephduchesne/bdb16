@@ -136,7 +136,7 @@ void PrintPacket(uint32_t page, uint8_t packet, LogEntry& entry) {
             {
               BasicLog1& bl1 = entry.basic_log_1;
               PrintDecimal4Bit(bl1.battery);
-              Serial2.printf(" %u ", bl1.radio_connected);
+              Serial2.printf("%u ", bl1.radio_connected);
               Serial2.printf("%u %u %u ", bl1.rc_ch1, bl1.rc_ch2, bl1.rc_ch3);
               // convert 4 bit back to 11 bit
               Serial2.printf("%u %u %u ", bl1.rc_ch4 << 7, bl1.rc_ch5 << 7, bl1.rc_ch6 << 7);

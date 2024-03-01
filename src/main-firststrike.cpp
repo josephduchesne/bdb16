@@ -1,8 +1,10 @@
 #include <Arduino.h>
+#include <bdb16.h>
 #include <FirstStrike.h>
 #include <dshot/esc.h>
 #include <functional>   // std::reference_wrapper
 #include <CrsfSerial.h>
+#include <FlashLog.h>
 
 // todo: move pole pair to 2nd argument
 
@@ -45,9 +47,10 @@ bool repeating_timer_callback(struct repeating_timer *t) {
 }
 
 void setup() {
-    Serial2.begin(115200);
+    BDB16::setup(robot);
 
     robot.init();
+    FlashLog::Setup();
 
     radio.onPacketChannels = &packetChannels;
     Serial1.setFIFOSize(64);
@@ -69,18 +72,28 @@ void loop() {
     delay(5);
     robot.update();
 
+    // update FlashLog
+    FlashLog::WriteBasic(BDB16::read_voltage_mV(), radio.isLinkUp(), 
+        {(uint16_t)radio.getChannel(1), (uint16_t)radio.getChannel(2), (uint16_t)radio.getChannel(3),
+        (uint16_t)radio.getChannel(4), (uint16_t)radio.getChannel(5), (uint16_t)radio.getChannel(6)},
+        {robot.escs_[0].output, robot.escs_[1].output, robot.escs_[2].output, 0}
+        );
+    for(auto& esc : robot.escs_) {
+        DShot::Telemetry& telemetry = esc.telemetry;
+        FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A);
+    }
+
     // Todo: Set ESC on timer
-    // Todo: Timeout ESC if not set for too long
     // Todo: Capture last telemetry time / time out telemetry validity
 
-    if (millis()-last_print >= 250) {
-        last_print = millis();
-        for(auto& esc : robot.escs_) {
-            DShot::Telemetry& telemetry = esc.telemetry;
-            // Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.get().pio_sm, telemetry.rpm, telemetry.temperature_C, 
-            //                 telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
-            //                 (float)telemetry.errors*100.0f/telemetry.reads);
-        }
-        //Serial2.println(crsf.isLinkUp());
-    }
+    // if (millis()-last_print >= 250) {
+    //     last_print = millis();
+    //     for(auto& esc : robot.escs_) {
+    //         DShot::Telemetry& telemetry = esc.telemetry;
+    //         // Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.get().pio_sm, telemetry.rpm, telemetry.temperature_C, 
+    //         //                 telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
+    //         //                 (float)telemetry.errors*100.0f/telemetry.reads);
+    //     }
+    //     //Serial2.println(crsf.isLinkUp());
+    // }
 }

@@ -76,7 +76,6 @@ void loop() {
     // Todo: Capture last telemetry time / time out telemetry validity
 
     // update FlashLog
-    // TODO: Fix WriteBasic, none of the radio items are working :/
     FlashLog::WriteBasic(BDB16::read_voltage_mV(), radio.isLinkUp(), 
         {(uint16_t)radio.getChannel(1), (uint16_t)radio.getChannel(2), (uint16_t)radio.getChannel(3),
         (uint16_t)radio.getChannel(4), (uint16_t)radio.getChannel(5), (uint16_t)radio.getChannel(6)},
@@ -87,14 +86,14 @@ void loop() {
         FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A);
     }
 
-    if (millis()-last_print >= 250) {
-        last_print = millis();
-        for(auto& esc : robot.escs_) {
-            DShot::Telemetry& telemetry = esc.telemetry;
-            Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.pio_sm, telemetry.rpm, telemetry.temperature_C, 
-                            telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
-                            (float)telemetry.errors*100.0f/telemetry.reads);
-        }
-        Serial2.println(radio.isLinkUp());
-    }
+    // if (millis()-last_print >= 250) {
+    //     last_print = millis();
+    //     for(auto& esc : robot.escs_) {
+    //         DShot::Telemetry& telemetry = esc.telemetry;
+    //         Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.pio_sm, telemetry.rpm, telemetry.temperature_C, 
+    //                         telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
+    //                         (float)telemetry.errors*100.0f/telemetry.reads);
+    //     }
+    //     Serial2.println(radio.isLinkUp());
+    // }
 }

@@ -7,7 +7,7 @@ namespace BDB16 {
     void setup(Robot& robot) {
         Serial2.begin(115200);
         delay(500); // slight pause to ensure Serial2 is connected PC side
-        Serial2.println(robot.name());
+        Serial2.printf("\u001b[33m%s\u001b[0m Online!\n", robot.name());
 
         analogReadResolution(12);
         pinMode(PIN_VSENSE, INPUT);
@@ -20,9 +20,9 @@ namespace BDB16 {
         uint64_t value = (uint64_t)analogRead(PIN_VSENSE) * 110u * 3300u / 10u / 4096u; 
 
         if (era_mV == 0) {
-        era_mV = value;
+            era_mV = value;
         } else {
-        era_mV = (era_mV * 90 + value * 10) / 100;
+            era_mV = (era_mV * 90 + value * 10) / 100;
         }
         return (uint16_t) era_mV;
         
