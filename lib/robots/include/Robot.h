@@ -15,14 +15,15 @@
 class Robot
 {
 public:
-    Robot(CrsfSerial radio, const ChannelArray escs);
+    Robot(CrsfSerial& radio, const ChannelArray escs);
     ~Robot();
 
     void init();    // called once
     void update();  // called each loop
     void output();  // called once per output period
+    virtual const char* name() = 0;
 
 // protected:
     ChannelArray escs_;
-    CrsfSerial radio_;
+    CrsfSerial& radio_;
 };

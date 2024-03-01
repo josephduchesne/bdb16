@@ -77,7 +77,7 @@ void EraseEverything();
 
 void WritePacket(LogEntry &packet);
 
-void WriteBasic(uint16_t battery_mV, const std::array<uint16_t, 6>& rc, const std::array<uint16_t, 4> out);
+void WriteBasic(uint16_t battery_mV, bool radio_connected, const std::array<uint16_t, 6>& rc, const std::array<uint16_t, 4> out);
 
 void WriteESC(uint64_t timestamp_us, uint8_t esc, 
                       uint32_t rpm, uint8_t temperature_C, 

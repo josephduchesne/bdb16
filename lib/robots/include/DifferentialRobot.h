@@ -13,7 +13,7 @@
 class DifferentialRobot : public Robot
 {
 public:
-    DifferentialRobot(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm);
+    DifferentialRobot(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm);
 
     void init();    // called once
     void update();  // called each loop

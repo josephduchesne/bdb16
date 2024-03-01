@@ -45,16 +45,17 @@ void WritePacket(LogEntry &packet) {
   
   if (current_sector_packet == 0) {  // first packet
     buf.packet = current_packet;
-    Serial2.printf("Starting fresh FlashLog page %d\n", buf.packet);
+    // Serial2.printf("Starting fresh FlashLog page %d\n", buf.packet);
   }
 
-  Serial2.printf("Copying packet in to %d\n", current_sector_packet);
+  //Serial2.printf("Copying packet in to %d\n", current_sector_packet);
   memcpy(&buf.data[current_sector_packet], &packet, sizeof(LogEntry));
 
   if (current_sector_packet < packets_per_block-1) {
     current_sector_packet++;
   } else { // full, write out now!
-    Serial2.printf("Filled FlashLog page %d, writing to offset %d\n", buf.packet, current_flash_offset - XIP_BASE);
+    Serial2.printf("FlashLog wrote page %d\n", buf.packet);
+    //Serial2.printf("Filled FlashLog page %d, writing to offset %d\n", buf.packet, current_flash_offset - XIP_BASE);
     uint32_t ints = save_and_disable_interrupts();
     flash_range_program(current_flash_offset-XIP_BASE, (uint8_t *)(&buf), FLASH_PAGE_SIZE);
     restore_interrupts (ints);
@@ -65,14 +66,15 @@ void WritePacket(LogEntry &packet) {
   }
 }
 
-void WriteBasic(uint16_t battery_mV, const std::array<uint16_t, 6>& rc, const std::array<uint16_t, 4> out) {
+void WriteBasic(uint16_t battery_mV, bool radio_connected, const std::array<uint16_t, 6>& rc, const std::array<uint16_t, 4> out) {
     static LogEntry entry;
     
     entry.packetType = 1;  // todo: Enum!
-    entry.timestamp = (uint32_t)(micros() * 256/1000);  // convert from us to 1/256ms
+    entry.timestamp = (uint32_t)(micros() * (uint64_t)256/(uint64_t)1000);  // convert from us to 1/256ms
 
     BasicLog1& bl1 = entry.basic_log_1;
     bl1.battery = (((uint64_t)battery_mV) * 16 / 1000) & BITMASK_10; // 10 bit range
+    bl1.radio_connected = radio_connected & 0b1;
     bl1.rc_ch1 = rc[0] & BITMASK_11; // 11 bit in/out
     bl1.rc_ch2 = rc[1] & BITMASK_11; // 11 bit in/out
     bl1.rc_ch3 = rc[2] & BITMASK_11; // 11 bit in/out
@@ -91,7 +93,7 @@ void WriteESC(uint64_t timestamp_us, uint8_t esc,
                       uint16_t volts_cV, uint8_t amps_A) {
     static LogEntry entry;
     entry.packetType = 2; // todo: Enum!
-    entry.timestamp = (uint32_t)(timestamp_us * 256/1000);  // convert from us to ms/256
+    entry.timestamp = (uint32_t)(timestamp_us * (uint64_t)256/(uint64_t)1000);  // convert from us to ms/256
 
     ESCLog2& el2 = entry.esc_log_2;
 
@@ -108,7 +110,7 @@ void WriteIMU(const std::array<int16_t, 3>& gyro, const std::array<int16_t, 3>& 
     static LogEntry entry;
     
     entry.packetType = 3;  // todo: Enum!
-    entry.timestamp = (uint32_t)(micros() * 256/1000);  // convert from us to 1/256ms
+    entry.timestamp = (uint32_t)(micros() * (uint64_t)256/(uint64_t)1000);  // convert from us to 1/256ms
 
     IMULog3& il3 = entry.imu_log_3;
     il3.gyro[0] = gyro[0];
@@ -121,21 +123,20 @@ void WriteIMU(const std::array<int16_t, 3>& gyro, const std::array<int16_t, 3>& 
 }
 
 void PrintDecimal8Bit(uint32_t val) {
-    Serial2.printf("%d.%4d ", val>>8, (uint16_t)((uint64_t)(val & 0b11111111)*1000/256));
+    Serial2.printf("%d.%04d ", val>>8, (uint16_t)((uint64_t)(val & 0b11111111)*1000/256));
 }
 void PrintDecimal4Bit(uint16_t val) {
-    Serial2.printf("%d.%4d ", val>>4, 625*(uint16_t)(val & 0b1111));
+    Serial2.printf("%d.%03d ", val>>4, 625*(uint16_t)(val & 0b1111));
 }
 
 void PrintPacket(uint32_t page, uint8_t packet, LogEntry& entry) {
-    Serial2.printf("%d %d %d ", page, packet, entry.packetType);
+    Serial2.printf("%d %d %d %u ", page, packet, entry.packetType, entry.timestamp);
     switch (entry.packetType) {
         case 1:  // BasicLog1
             {
               BasicLog1& bl1 = entry.basic_log_1;
-              Serial2.printf("%u ", entry.timestamp);
               PrintDecimal4Bit(bl1.battery);
-              Serial2.printf("%u ", bl1.radio_connected);
+              Serial2.printf(" %u ", bl1.radio_connected);
               Serial2.printf("%u %u %u ", bl1.rc_ch1, bl1.rc_ch2, bl1.rc_ch3);
               // convert 4 bit back to 11 bit
               Serial2.printf("%u %u %u ", bl1.rc_ch4 << 7, bl1.rc_ch5 << 7, bl1.rc_ch6 << 7);
@@ -145,16 +146,15 @@ void PrintPacket(uint32_t page, uint8_t packet, LogEntry& entry) {
         case 2: // ESCLog2
           {
             ESCLog2& el2 = entry.esc_log_2;
-            Serial2.printf("%u %u ", el2.esc, entry.timestamp);
-            Serial2.printf("%u %u %u.%2u %d\n", el2.rpm, el2.temperature_C, 
-                            el2.volts_cV/100, el2.volts_cV%100, el2.amps_A);
+            Serial2.printf("%u ", el2.esc);
+            Serial2.printf("%u %u %u %d\n", el2.rpm, el2.temperature_C, 
+                            el2.volts_cV, el2.amps_A);
           }
             break;
         case 3: // IMULog3
           {
             IMULog3& il3 = entry.imu_log_3;
-            Serial2.printf("%u ", entry.timestamp);
-            Serial2.printf("gyro: %d %d %d acc: %d %d %d\n", il3.gyro[0], il3.gyro[1], il3.gyro[2], il3.accel[0], il3.accel[1], il3.accel[2]);
+            Serial2.printf("%d %d %d %d %d %d\n", il3.gyro[0], il3.gyro[1], il3.gyro[2], il3.accel[0], il3.accel[1], il3.accel[2]);
           }
             break;
         default:

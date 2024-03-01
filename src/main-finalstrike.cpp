@@ -1,10 +1,11 @@
 #include <Arduino.h>
-#include <robots/FirstStrike.h>
+#include <bdb16.h>
+#include <FinalStrike.h>
 #include <dshot/esc.h>
 #include <functional>   // std::reference_wrapper
 #include <CrsfSerial.h>
-
-// todo: move pole pair to 2nd argument
+#include <dynamics/DifferentialModel.h>
+#include <FlashLog.h>
 
 static volatile bool alarm_fired;
 volatile float left, right;
@@ -13,23 +14,22 @@ struct repeating_timer timer;
 
 CrsfSerial radio(Serial1, CRSF_BAUDRATE);
 
-
 DifferentialModel model(
-        0.04445f,       // wheel diameter (m)
-        0.1022f,        // wheel separation (m)
-        1400.0f/4.0f,   // effective kV (kV/gear reduction)
+        0.055f,         // wheel diameter (m)
+        0.152f,         // wheel separation (m)
+        1000.0f/5.0f,   // effective kV (kV/gear reduction)
         16.8f,          // Nominal Vbatt (V)
         5.3f,           // max velocity (m/s)
         8.47f,          // max acceleration (m/s^2)
-        25.2f,          // max angular velocity (rad/s)
+        18.25f,         // max angular velocity (rad/s)
         111.4f          // max angular acceleration (rad/s^2)
     );
 
-FirstStrike robot(  radio, 
+FinalStrike robot(  radio,
                     {
-                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // left drive
-                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // right drive
-                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
+                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, true),  // left drive
+                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive
+                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false)  // weapon
                     },
                     model);
 
@@ -45,13 +45,15 @@ bool repeating_timer_callback(struct repeating_timer *t) {
 }
 
 void setup() {
-    Serial2.begin(115200);
+    BDB16::setup(robot);
 
     robot.init();
+    FlashLog::Setup();
 
     radio.onPacketChannels = &packetChannels;
     Serial1.setFIFOSize(64);
     Serial1.begin(CRSF_BAUDRATE, SERIAL_8N1);
+    
     // Negative delay so means we will call repeating_timer_callback, and call it again
     // 500ms later regardless of how long the callback took to execute
     
@@ -73,14 +75,26 @@ void loop() {
     // Todo: Timeout ESC if not set for too long
     // Todo: Capture last telemetry time / time out telemetry validity
 
+    // update FlashLog
+    // TODO: Fix WriteBasic, none of the radio items are working :/
+    FlashLog::WriteBasic(BDB16::read_voltage_mV(), radio.isLinkUp(), 
+        {(uint16_t)radio.getChannel(1), (uint16_t)radio.getChannel(2), (uint16_t)radio.getChannel(3),
+        (uint16_t)radio.getChannel(4), (uint16_t)radio.getChannel(5), (uint16_t)radio.getChannel(6)},
+        {robot.escs_[0].output, robot.escs_[1].output, robot.escs_[2].output, 0}
+        );
+    for(auto& esc : robot.escs_) {
+        DShot::Telemetry& telemetry = esc.telemetry;
+        FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A);
+    }
+
     if (millis()-last_print >= 250) {
         last_print = millis();
         for(auto& esc : robot.escs_) {
             DShot::Telemetry& telemetry = esc.telemetry;
-            // Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.get().pio_sm, telemetry.rpm, telemetry.temperature_C, 
-            //                 telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
-            //                 (float)telemetry.errors*100.0f/telemetry.reads);
+            Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.pio_sm, telemetry.rpm, telemetry.temperature_C, 
+                            telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
+                            (float)telemetry.errors*100.0f/telemetry.reads);
         }
-        //Serial2.println(crsf.isLinkUp());
+        Serial2.println(radio.isLinkUp());
     }
 }

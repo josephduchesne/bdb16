@@ -1,6 +1,6 @@
-#include "robots/FirstStrike.h"
+#include "FirstStrike.h"
 
-FirstStrike::FirstStrike(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm) : DifferentialRobot( radio, escs, dm ) {}
+FirstStrike::FirstStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm) : DifferentialRobot( radio, escs, dm ) {}
 
 void FirstStrike::init() {
     DifferentialRobot::init();

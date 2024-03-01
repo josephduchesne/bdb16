@@ -6,16 +6,18 @@
 #include <FastLED.h>
 // #include <PacketSerial.h>
 
-#include "robots/DifferentialRobot.h"
+#include "DifferentialRobot.h"
 
 class FirstStrike : public DifferentialRobot
 {
 public:
-    FirstStrike(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm);
+    FirstStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm);
 
     void init();
     void update();
     void output();
+
+    virtual const char* name() override { return "First Strike"; };
 
     void LEDs();
 

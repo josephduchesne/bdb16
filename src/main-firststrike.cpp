@@ -1,9 +1,10 @@
 #include <Arduino.h>
-#include <robots/FinalStrike.h>
+#include <FirstStrike.h>
 #include <dshot/esc.h>
 #include <functional>   // std::reference_wrapper
 #include <CrsfSerial.h>
-#include <dynamics/DifferentialModel.h>
+
+// todo: move pole pair to 2nd argument
 
 static volatile bool alarm_fired;
 volatile float left, right;
@@ -12,22 +13,23 @@ struct repeating_timer timer;
 
 CrsfSerial radio(Serial1, CRSF_BAUDRATE);
 
+
 DifferentialModel model(
-        0.055f,         // wheel diameter (m)
-        0.152f,         // wheel separation (m)
-        1000.0f/5.0f,   // effective kV (kV/gear reduction)
+        0.04445f,       // wheel diameter (m)
+        0.1022f,        // wheel separation (m)
+        1400.0f/4.0f,   // effective kV (kV/gear reduction)
         16.8f,          // Nominal Vbatt (V)
         5.3f,           // max velocity (m/s)
         8.47f,          // max acceleration (m/s^2)
-        18.25f,         // max angular velocity (rad/s)
+        25.2f,          // max angular velocity (rad/s)
         111.4f          // max angular acceleration (rad/s^2)
     );
 
-FinalStrike robot(  radio,
+FirstStrike robot(  radio, 
                     {
-                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, true),  // left drive
-                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive
-                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false)  // weapon
+                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // left drive
+                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // right drive
+                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
                     },
                     model);
 
@@ -44,14 +46,12 @@ bool repeating_timer_callback(struct repeating_timer *t) {
 
 void setup() {
     Serial2.begin(115200);
-    delay(500); // slight pause to ensure Serial2 is connected PC side
 
     robot.init();
 
     radio.onPacketChannels = &packetChannels;
     Serial1.setFIFOSize(64);
     Serial1.begin(CRSF_BAUDRATE, SERIAL_8N1);
-    
     // Negative delay so means we will call repeating_timer_callback, and call it again
     // 500ms later regardless of how long the callback took to execute
     
@@ -77,10 +77,10 @@ void loop() {
         last_print = millis();
         for(auto& esc : robot.escs_) {
             DShot::Telemetry& telemetry = esc.telemetry;
-            Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.pio_sm, telemetry.rpm, telemetry.temperature_C, 
-                            telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
-                            (float)telemetry.errors*100.0f/telemetry.reads);
+            // Serial2.printf("%d: %drpm, %dC, %02d.%02dV, %dA %0.3f\t", esc.get().pio_sm, telemetry.rpm, telemetry.temperature_C, 
+            //                 telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
+            //                 (float)telemetry.errors*100.0f/telemetry.reads);
         }
-        Serial2.println(radio.isLinkUp());
+        //Serial2.println(crsf.isLinkUp());
     }
 }

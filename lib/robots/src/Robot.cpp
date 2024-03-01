@@ -1,6 +1,6 @@
-#include "robots/Robot.h"
+#include "Robot.h"
 
-Robot::Robot(CrsfSerial radio, const ChannelArray escs): radio_(radio), escs_{ escs } {
+Robot::Robot(CrsfSerial& radio, const ChannelArray escs): radio_(radio), escs_{ escs } {
 
     // init dshot output
     // TODO

@@ -6,12 +6,14 @@
 #include <FastLED.h>
 // #include <PacketSerial.h>
 
-#include "robots/FirstStrike.h"
+#include "FirstStrike.h"
 
 class FinalStrike : public FirstStrike
 {
 public:
-    FinalStrike(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm);
+    FinalStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm);
+
+    virtual const char* name() override { return "Final Strike"; };
 
     void init();
     // void update();

@@ -1,6 +1,6 @@
-#include "robots/DifferentialRobot.h"
+#include "DifferentialRobot.h"
 
-DifferentialRobot::DifferentialRobot(CrsfSerial radio, const ChannelArray escs, DifferentialModel& dm) 
+DifferentialRobot::DifferentialRobot(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm) 
     : Robot(radio, escs), model_(dm) {}
 
 void DifferentialRobot::init() {
