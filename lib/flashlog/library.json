@@ -1,0 +1,12 @@
+{
+    "name": "flashlog",
+    "version": "1.0.0",
+    "description": "Internal flash logging and playback",
+    "keywords": "flash, log",
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "dependencies": {
+      "utility": ""
+    }
+  }

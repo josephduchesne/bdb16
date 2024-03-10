@@ -75,7 +75,8 @@ void FindFirstFreeSector();
 
 void EraseEverything();
 
-void WritePacket(LogEntry &packet);
+LogEntry* GetNextEntry();
+void WritePacketIfFull();
 
 void WriteBasic(uint16_t battery_mV, bool radio_connected, const std::array<uint16_t, 6>& rc, const std::array<uint16_t, 4> out);
 
@@ -92,6 +93,6 @@ void PrintPacket(uint32_t page, uint8_t packet, LogEntry& entry);
 
 void ReadAll();
 
-void Setup();
+void Setup(bool skip_prompt=false);
 
 }  // end namespace FlashLog

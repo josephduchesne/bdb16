@@ -28,14 +28,13 @@
 //
  
 #include <Wire.h>
- 
+#include <bdb16.h>
  
 void setup()
 {
   Wire.begin();
  
-  Serial2.begin(115200);
-  while (!Serial2);             // Leonardo: wait for serial2 monitor
+  BDB16::init();
   Serial2.println("\nI2C Scanner");
 }
  

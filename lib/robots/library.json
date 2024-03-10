@@ -1,0 +1,12 @@
+{
+    "name": "robots",
+    "version": "1.0.0",
+    "description": "OOP Classes for various small combat robots",
+    "keywords": "robots",
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "dependencies": {
+      "PicoDshotBidir": "*"
+    }
+  }

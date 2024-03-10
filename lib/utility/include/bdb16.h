@@ -4,8 +4,18 @@
 #include <Robot.h>
 
 namespace BDB16 {
-    void setup(Robot& robot) {
-        Serial2.begin(115200);
+
+    void init() {
+        Serial2.begin(2000000);
+        delay(500); // slight pause to ensure Serial2 is connected PC side
+        Serial2.printf("\u001b[33mBDB16\u001b[0m Online!\n");
+
+        analogReadResolution(12);
+        pinMode(PIN_VSENSE, INPUT);
+    }
+
+    void init(Robot& robot) {
+        Serial2.begin(2000000);
         delay(500); // slight pause to ensure Serial2 is connected PC side
         Serial2.printf("\u001b[33m%s\u001b[0m Online!\n", robot.name());
 

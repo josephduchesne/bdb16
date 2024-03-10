@@ -3,12 +3,14 @@
 #include <FlashLog.h>
 
 void setup() {
-    Serial2.begin(112500);
+    Serial2.setFIFOSize(256);
+    Serial2.begin(2000000);
     pinMode(LED_BUILTIN, OUTPUT);
     delay(500);
 
-    FlashLog::Setup();
+    FlashLog::Setup(true);
 
+    long begin = micros();
     for(int i=0; i<14; i++) {
         FlashLog::WriteBasic(16200-i*100, i>7, {(uint16_t)1100+i, 1200, 1300, 500, 1000, 1500}, {200, 300, 400, 500});
     }
@@ -18,6 +20,11 @@ void setup() {
     for(int i=0; i<7; i++) {
         FlashLog::WriteIMU({1,2,i}, {-1, -2, -i});
     }
+    auto duration_us = micros()-begin;
+
+    printf("Wrote 28 flashlog entries in %luus, %dkB/s\n", duration_us, FLASH_PAGE_SIZE*2*1000/duration_us);
+
+    //FlashLog::ReadAll();
 
 }
 
