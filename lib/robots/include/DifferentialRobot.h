@@ -29,6 +29,7 @@ public:
     float last_w_ = 0;
     float last_left_ = 0;
     float last_right_ = 0;
+    float dt_ = 0.0f; // timestep of previous update step
 
     DifferentialModel& model_;
 

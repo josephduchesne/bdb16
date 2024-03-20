@@ -1,6 +1,6 @@
 #include "FinalStrike.h"
 
-FinalStrike::FinalStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm) : FirstStrike(radio, escs, dm) {}
+FinalStrike::FinalStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm, float spinup_time) : FirstStrike(radio, escs, dm, spinup_time) {}
 
 void FinalStrike::init() {
     DifferentialRobot::init();

@@ -36,7 +36,9 @@ FirstStrike robot(  radio,
                         DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // right drive
                         DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
                     },
-                    model);
+                    model,
+                    0.8f   // 0.8 second spin up time acceleration cap for drum
+                    );
 
 unsigned long packets = 0;
 void packetChannels() {packets++; }

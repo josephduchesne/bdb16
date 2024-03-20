@@ -11,7 +11,7 @@
 class FinalStrike : public FirstStrike
 {
 public:
-    FinalStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm);
+    FinalStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm, float spinup_time);
 
     virtual const char* name() override { return "Final Strike"; };
 

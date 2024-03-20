@@ -34,7 +34,9 @@ FinalStrike robot(  radio,
                         DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive
                         DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
                     },
-                    model);
+                    model,
+                    1.0f   // 1.0 second spin up speed limit (1/acceleration cap for drum)
+                    );
 
 unsigned long packets = 0;
 void packetChannels() {packets++; }

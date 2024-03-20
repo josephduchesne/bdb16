@@ -11,7 +11,7 @@ void DifferentialRobot::init() {
 void DifferentialRobot::update() {
 
     Robot::update();
-    float dt = (micros()-last_update_)/1000000.0f;  // us->s
+    dt_ = (micros()-last_update_)/1000000.0f;  // us->s
     last_update_ = micros();
 
     DShot::ESC::processTelemetryQueue();
@@ -37,7 +37,7 @@ void DifferentialRobot::update() {
         model_.scaleArcadeInput(stick_in_v, stick_in_w, in_v, in_w);
 
         // apply model's velocity and acceleration constraints
-        model_.applyConstraints(last_v_, last_w_, in_v, in_w, dt, v_, w_);
+        model_.applyConstraints(last_v_, last_w_, in_v, in_w, dt_, v_, w_);
 
         // convert from twist v/w to L/R channels
         model_.twistToDifferentialVelocity(v_, w_, left_v_, right_v_);

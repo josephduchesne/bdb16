@@ -1,6 +1,11 @@
 #include "FirstStrike.h"
+#include <dynamics/Constraints.h>
 
-FirstStrike::FirstStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm) : DifferentialRobot( radio, escs, dm ) {}
+FirstStrike::FirstStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm, float spinup_time)
+: DifferentialRobot( radio, escs, dm ), spinup_time_(spinup_time) 
+{
+    // empty
+}
 
 void FirstStrike::init() {
     DifferentialRobot::init();
@@ -37,7 +42,7 @@ void FirstStrike::LEDs() {
 }
 
 void FirstStrike::update() {
-    DifferentialRobot::update();
+    DifferentialRobot::update(); // updated dt_ parameter
 
     if (radio_.isLinkUp()) { 
         int16_t weapon_in = radio_.getChannel(3);
@@ -46,10 +51,18 @@ void FirstStrike::update() {
             weapon_ = constrain(((float)(weapon_in-1500)*2.0f/1000.0f), -1.0f, 1.0f);
         }
 
+        // acceleration limit weapon in the throttle domain (kind of weird)
+        // spinup_time_ is in units of "seconds/full throttle", and throttle domain acceleration is a scaled radians/second
+        // as a result the acceleration limit is the inverse of spinup_time_
+        weapon_ = Constraints::capAccleration(previous_weapon_, weapon_, dt_, 1.0f/spinup_time_);
+        
+        // TODO: add a deadband on reversing direction
+
         // SEGGER_RTT_printf(0, "ch2: %d, %d, %d\n", crsf.getChannel(3), ch2);
     } else {
-        weapon_ = 0.0f;  // weapon throttle disabled when radio is disconnected
+        weapon_ = 0.0f;  // weapon throttle disabled when radio is disconnected. Currently this ignores acceleration limits.
     }
+    previous_weapon_ = weapon_;  // store for acceleration limiting
 
     LEDs();
 

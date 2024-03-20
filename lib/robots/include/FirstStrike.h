@@ -10,7 +10,7 @@
 class FirstStrike : public DifferentialRobot
 {
 public:
-    FirstStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm);
+    FirstStrike(CrsfSerial& radio, const ChannelArray escs, DifferentialModel& dm, float spinup_time);
 
     void init();
     void update();
@@ -20,7 +20,9 @@ public:
 
     void LEDs();
 
+    float spinup_time_;
     volatile float weapon_ = 0.0f;
+    float previous_weapon_ = 0.0f;
     constexpr static size_t num_leds_ = 16;
     CRGB leds_[num_leds_];
 
