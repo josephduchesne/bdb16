@@ -46,6 +46,7 @@ int32_t encoderValue() {
         if (delta<-8000) encoderZeroCrossings--;
     } else {
         delta = -(int32_t)result; 
+    }
 
     encoderLastValue = (int32_t) result;
     // SEGGER_RTT_printf(0, "Encoder Value %d delta %d zc %d final %d deg %d\n", result & 0x3FFF, delta, encoderZeroCrossings, encoderLastValue + 16384 * encoderZeroCrossings, encoderAngle(encoderLastValue + 16384 * encoderZeroCrossings));
