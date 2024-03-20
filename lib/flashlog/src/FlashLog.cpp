@@ -172,7 +172,7 @@ void __no_inline_not_in_flash_func(PrintPacket)(uint32_t page, uint8_t packet, L
           {
             ESCLog2& el2 = entry.esc_log_2;
 
-            printf("%u %u %u %u %d %d %d %d %d\n", el2.esc, el2.rpm, el2.temperature_C, el2.volts_cV, el2.amps_A, el2.debug1, el2.debug2, el2.stress, el2.status);
+            printf("%u %u %u %u %u %u %u %u %u\n", el2.esc, el2.rpm, el2.temperature_C, el2.volts_cV, el2.amps_A, el2.debug1, el2.debug2, el2.stress, el2.status);
           }
             break;
         case 3: // IMULog3
