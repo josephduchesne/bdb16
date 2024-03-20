@@ -32,7 +32,7 @@ FinalStrike robot(  radio,
                     {
                         DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, true),  // left drive
                         DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive
-                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false)  // weapon
+                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
                     },
                     model);
 
