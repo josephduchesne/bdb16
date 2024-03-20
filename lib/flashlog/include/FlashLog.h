@@ -44,6 +44,10 @@ typedef struct __attribute__((__packed__)) ESCLog2 {
     uint8_t temperature_C;      // degrees Celcius
     uint16_t volts_cV;          // centi-volts, or V/100
     uint8_t amps_A;             // Amps
+    uint8_t debug1;
+    uint8_t debug2;
+    uint8_t stress;
+    uint8_t status;
 } ESCLog2;
 
 typedef struct __attribute__((__packed__)) IMULog3 {
@@ -82,7 +86,8 @@ void WriteBasic(uint16_t battery_mV, bool radio_connected, const std::array<uint
 
 void WriteESC(uint64_t timestamp_us, uint8_t esc, 
                       uint32_t rpm, uint8_t temperature_C, 
-                      uint16_t volts_cV, uint8_t amps_A);
+                      uint16_t volts_cV, uint8_t amps_A,
+                      uint8_t debug1, uint8_t debug2, uint8_t stress, uint8_t status);
 
 void WriteIMU(const std::array<int16_t, 3>& gyro, const std::array<int16_t, 3>& accel);
 

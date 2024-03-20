@@ -93,7 +93,8 @@ void loop() {
             );
         for(auto& esc : robot.escs_) {
             DShot::Telemetry& telemetry = esc.telemetry;
-            FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A);
+            FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A,
+                               telemetry.debug1, telemetry.debug2, telemetry.stress, telemetry.status);
         }
     }
 

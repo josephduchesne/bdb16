@@ -109,7 +109,8 @@ void __no_inline_not_in_flash_func(WriteBasic)(uint16_t battery_mV, bool radio_c
 
 void __no_inline_not_in_flash_func(WriteESC)(uint64_t timestamp_us, uint8_t esc, 
                       uint32_t rpm, uint8_t temperature_C, 
-                      uint16_t volts_cV, uint8_t amps_A) {
+                      uint16_t volts_cV, uint8_t amps_A, 
+                      uint8_t debug1, uint8_t debug2, uint8_t stress, uint8_t status) {
     LogEntry *entry = GetNextEntry();
     if (entry == nullptr) return;
 
@@ -123,6 +124,10 @@ void __no_inline_not_in_flash_func(WriteESC)(uint64_t timestamp_us, uint8_t esc,
     el2.temperature_C = temperature_C;
     el2.volts_cV = volts_cV;
     el2.amps_A = amps_A;
+    el2.debug1 = debug1;
+    el2.debug2 = debug2;
+    el2.stress = stress;
+    el2.status = status;
 
     WritePacketIfFull();
 }
@@ -167,7 +172,7 @@ void __no_inline_not_in_flash_func(PrintPacket)(uint32_t page, uint8_t packet, L
           {
             ESCLog2& el2 = entry.esc_log_2;
 
-            printf("%u %u %u %u %d\n", el2.esc, el2.rpm, el2.temperature_C, el2.volts_cV, el2.amps_A);
+            printf("%u %u %u %u %d %d %d %d %d\n", el2.esc, el2.rpm, el2.temperature_C, el2.volts_cV, el2.amps_A, el2.debug1, el2.debug2, el2.stress, el2.status);
           }
             break;
         case 3: // IMULog3
