@@ -88,7 +88,7 @@ void __no_inline_not_in_flash_func(WriteBasic)(uint16_t battery_mV, bool radio_c
     if (entry == nullptr) return;
     
     entry->packetType = 1;  // todo: Enum!
-    entry->timestamp = (uint32_t)(micros() * (uint64_t)256/(uint64_t)1000);  // convert from us to 1/256ms
+    entry->timestamp = (uint32_t)micros();  // new format: just use microseconds
 
     BasicLog1& bl1 = entry->basic_log_1;
     bl1.battery = (((uint64_t)battery_mV) * 16 / 1000) & BITMASK_10; // 10 bit range
@@ -114,7 +114,7 @@ void __no_inline_not_in_flash_func(WriteESC)(uint64_t timestamp_us, uint8_t esc,
     if (entry == nullptr) return;
 
     entry->packetType = 2; // todo: Enum!
-    entry->timestamp = (uint32_t)(timestamp_us * (uint64_t)256/(uint64_t)1000);  // convert from us to ms/256
+    entry->timestamp = (uint32_t)(timestamp_us);  // new format: just use microseconds
 
     ESCLog2& el2 = entry->esc_log_2;
 
@@ -132,7 +132,7 @@ void __no_inline_not_in_flash_func(WriteIMU)(const std::array<int16_t, 3>& gyro,
     if (entry == nullptr) return;
     
     entry->packetType = 3;  // todo: Enum!
-    entry->timestamp = (uint32_t)(micros() * (uint64_t)256/(uint64_t)1000);  // convert from us to 1/256ms
+    entry->timestamp = (uint32_t)micros();  // new format: just use microseconds
 
     IMULog3& il3 = entry->imu_log_3;
     il3.gyro[0] = gyro[0];
