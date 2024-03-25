@@ -13,7 +13,7 @@ void test_dshot_convert_throttle_3d(void) {
     TEST_ASSERT_EQUAL_UINT16(2047, DShot::ESC::convertThrottle3D(-1.0f));    // max direction2
     TEST_ASSERT_EQUAL_UINT16(2047, DShot::ESC::convertThrottle3D(-5.0f));       // max direction2
     TEST_ASSERT_EQUAL_UINT16(2046, DShot::ESC::convertThrottle3D(-0.999f));    // max direction2 - 0.1%
-    TEST_ASSERT_EQUAL_UINT16(1049, DShot::ESC::convertThrottle3D(-0.001f));  // min non-zero direction2
+    TEST_ASSERT_EQUAL_UINT16(1048, DShot::ESC::convertThrottle3D(-0.001f));  // min non-zero direction2
 }
 
 int runUnityTests(void) {

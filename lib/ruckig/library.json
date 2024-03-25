@@ -1,0 +1,9 @@
+{
+    "name": "ruckig",
+    "version": "0.12.2",
+    "description": "Instantaneous Motion Generation for Robots and Machines.",
+    "keywords": "trajectory,motion,dynamics,constraints",
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*"
+  }

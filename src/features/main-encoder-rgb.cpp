@@ -7,8 +7,8 @@
 
 CRGB leds[NUM_LEDS];
 
-uint16_t min_val = 6680;
-uint16_t max_val = 12350;
+int32_t min_val = -3650;
+int32_t max_val = 1220;
 
 #define ENCODER_CS PIN_SPI0_CS0
 void setup() {
@@ -27,7 +27,7 @@ int32_t encoderValue() {
     static int32_t encoderLastValue = -1;
 
     digitalWrite(ENCODER_CS, LOW);
-    SPI1.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE1));
+    SPI1.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE1));
     uint16_t result = SPI1.transfer16(0);
     //result = (( result ) & (0x3FFF));  // ignore MSB and MSB-1 (parity and 0)
     // todo: Check parity bits?
@@ -46,6 +46,7 @@ int32_t encoderValue() {
         if (delta<-8000) encoderZeroCrossings--;
     } else {
         delta = -(int32_t)result; 
+        if (delta<-8000) encoderZeroCrossings--;
     }
 
     encoderLastValue = (int32_t) result;
@@ -58,7 +59,7 @@ void loop() {
     int32_t encoder_value = encoderValue();
     int32_t leds_to_light=constrain(map(encoder_value, min_val, max_val, 0, NUM_LEDS), 0, NUM_LEDS);
 
-    Serial2.printf("Val: %d, leds to light: %d\n", encoder_value, leds_to_light);
+    Serial2.printf("Val: %d, leds to light: %d, %f degrees?\n", encoder_value, leds_to_light, (float)encoder_value/16384.0f*360.0f);
 
 
 
