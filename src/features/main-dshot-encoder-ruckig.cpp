@@ -12,9 +12,10 @@ DShot::ESC dshotR(DS0, pio0, DShot::Type::Normal, DShot::Speed::DS300, 14, 1.0, 
 
 #define ENCODER_CS PIN_SPI0_CS0
 
-int32_t min_val = -3650;
-int32_t max_val = 1220;
+int32_t min_val = -3729;
+int32_t max_val = 1441;
 uint64_t hold_time = 50; // ms
+uint64_t full_send_time = 65; // ms
 constexpr double control_latency_s = 0.01; // control latency, estimated from graphs. Update whenever blheli32 params are changed :/
 
 constexpr double deg_to_rad = 1.0/180*M_PI;
@@ -140,7 +141,7 @@ void loop() {
                 input.current_velocity = {0.0};
                 input.current_acceleration = {0.0};
 
-                input.target_position = {(55-5)*deg_to_rad};
+                input.target_position = {(55-6)*deg_to_rad};
                 input.target_velocity = {0.0};
                 input.target_acceleration = {0.0};
 
@@ -198,6 +199,11 @@ void loop() {
                         state_time = millis();
                     }
                 }
+
+                if (millis() - state_time < full_send_time && throttle != 0.0) {
+                    throttle = 1.0;
+                }
+
                 break;
             case LegYawState::holdHigh:
                 throttle = 0.0f;
@@ -214,7 +220,7 @@ void loop() {
                 input.current_velocity = {0.0};
                 input.current_acceleration = {0.0};
 
-                input.target_position = {-(55-5)*deg_to_rad};
+                input.target_position = {-(55-6)*deg_to_rad};
                 input.target_velocity = {0.0};
                 input.target_acceleration = {0.0};
                 
@@ -247,6 +253,7 @@ void loop() {
                 if (hold_loops>0) {
                     hold_loops--;
                     throttle = output.new_velocity[0]/full_throttle;
+
                     if (hold_loops == 0) {
                         //printf("After last hold loop: position: %f vs expected %f ad %f rad/s\n", encoderRads(encoder_value), output.new_position[0], output.new_velocity[0]);
                         // wait until the position + vel*latency is past the original position for this control loop before continuing
@@ -268,6 +275,11 @@ void loop() {
                         state_time = millis();
                     }
                 }
+
+                if (millis() - state_time < full_send_time && throttle != 0.0) {
+                    throttle = -1.0;
+                }
+
                 break;
             case LegYawState::holdLow:
                 throttle = 0.0f;
