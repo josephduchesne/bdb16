@@ -16,8 +16,8 @@ void setup() {
 void loop() {
   digitalWrite(LED_BUILTIN, HIGH);
   servo_left.writeMicroseconds(2000);
-  delay(500);
+  delay(75);
   digitalWrite(LED_BUILTIN, LOW);
   servo_left.writeMicroseconds(1500);
-  delay(500);
+  delay(75);
 }
