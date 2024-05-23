@@ -1,0 +1,13 @@
+{
+    "name": "mechanics",
+    "version": "1.0.0",
+    "description": "Wrapper classes for robot mechanics",
+    "keywords": "",
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "dependencies": {
+      "utility": "", 
+      "107-Arduino-Servo-RP2040": "107-systems/107-Arduino-Servo-RP2040@^0.2.0"
+    }
+  }

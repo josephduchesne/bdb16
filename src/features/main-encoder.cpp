@@ -1,49 +1,22 @@
-#include <Arduino.h>
-#include <SPI.h>
 #include <bdb16.h>
+#include <Encoder.h>
 
 #define ENCODER_CS PIN_SPI0_CS0
+Encoder encoder0(PIN_SPI0_CS0, 5879, 10759);  // right leg
+Encoder encoder1(PIN_SPI0_CS1, 9298, 4353);  // left leg
+Encoder encoder2(PIN_SPI0_CS2, 4375, 96650);  // hammer
+
 void setup() {
     BDB16::init();
-    SPI1.begin();
-    pinMode(ENCODER_CS, OUTPUT);
-    digitalWrite(ENCODER_CS, HIGH);
+    encoder0.init();
+    encoder1.init();
+    encoder2.init();
 }
-
-
-int32_t encoderValue() {
-    static int32_t encoderZeroCrossings = 0;
-    static int32_t encoderLastValue = -1;
-
-    digitalWrite(ENCODER_CS, LOW);
-    SPI1.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE1));
-    uint16_t result = SPI1.transfer16(0);
-    //result = (( result ) & (0x3FFF));  // ignore MSB and MSB-1 (parity and 0)
-    // todo: Check parity bits?
-    SPI1.endTransaction();
-    digitalWrite(ENCODER_CS, HIGH);
-    Serial2.printf("Encoder Value 0x%04x\n", result & 0x3FFF);
-    result = result & 0x3FFF; //result;
-
-    // account for zero crossings
-    
-    int32_t delta;
-    if (encoderLastValue != -1) {  // account for initialization
-        delta = encoderLastValue-(int32_t)result;
-        // ~180 degrees in one delta, indicates zero crossing
-        if (delta>8000) encoderZeroCrossings++;
-        if (delta<-8000) encoderZeroCrossings--;
-    } else {
-        delta = -(int32_t)result;
-    }
-
-    encoderLastValue = (int32_t) result;
-    // SEGGER_RTT_printf(0, "Encoder Value %d delta %d zc %d final %d deg %d\n", result & 0x3FFF, delta, encoderZeroCrossings, encoderLastValue + 16384 * encoderZeroCrossings, encoderAngle(encoderLastValue + 16384 * encoderZeroCrossings));
-    return encoderLastValue + 16384 * encoderZeroCrossings;
-}
-
 
 void loop() {
-    Serial2.println(encoderValue());
-    delay(100);
+    encoder0.update();
+    encoder1.update();
+    encoder2.update();
+    Serial2.printf("%d %.2f %d %.2f %d %.2f\n", encoder0.get(), encoder0.percent(), encoder1.get(), encoder1.percent(), encoder2.get(), encoder2.percent());
+    delay(2);
 }

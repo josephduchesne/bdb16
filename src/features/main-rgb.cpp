@@ -3,7 +3,7 @@
 // based on https://github.com/FastLED/FastLED/blob/master/examples/Fire2012/Fire2012.ino
 
 #include <FastLED.h>
-#define NUM_LEDS 16
+#define NUM_LEDS 25
 
 CRGB leds[NUM_LEDS];
 
@@ -34,11 +34,18 @@ void bpm()
   uint8_t BeatsPerMinute = 62;
   CRGBPalette16 palette = PartyColors_p;
   uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
-  for( int i = 0; i < NUM_LEDS; i++) { //9948
-    leds[i] = ColorFromPalette(palette, gHue+(i*2), beat-gHue+(i*10));
+  for( int i = 0; i < NUM_LEDS/2+1; i++) { //9948
+    leds[NUM_LEDS-i] = leds[i] = ColorFromPalette(palette, gHue+(i), beat+gHue-(i*35));
   }
+
 }
 
+void addGlitter( fract8 chanceOfGlitter) 
+{
+  if( random8() < chanceOfGlitter) {
+    leds[ random16(NUM_LEDS) ] += CRGB::White;
+  }
+}
 
 void Fire2012()
 {
@@ -77,11 +84,15 @@ void Fire2012()
 void loop() {
   digitalWrite(LED_BUILTIN, (millis()%1000) > 500);
 
-  EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+  //EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
 
 
   //Fire2012(); // run simulation frame
   bpm();
+  //fill_rainbow( leds, NUM_LEDS, gHue, 7);
+
+  //addGlitter(20);
+
   FastLED.show(); // display this frame
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
