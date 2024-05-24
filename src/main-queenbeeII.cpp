@@ -18,8 +18,8 @@ constexpr uint64_t log_interval     = 20;   // 20ms interval, 50Hz
 
 QueenBeeII robot(  radio,
                     {
-                        DShot::ESC(DS1, pio0, DShot::Type::Normal, DShot::Speed::DS600, 14, 0.1f, true),  // left drive
-                        DShot::ESC(DS0, pio0, DShot::Type::Normal, DShot::Speed::DS600, 14, 0.1f, true), // right drive
+                        DShot::ESC(DS1, pio0, DShot::Type::Normal, DShot::Speed::DS600, 14, 0.5f, true),  // left drive
+                        DShot::ESC(DS0, pio0, DShot::Type::Normal, DShot::Speed::DS600, 14, 0.5f, true), // right drive
                     }
                     );
 
@@ -76,9 +76,9 @@ void loop() {
         //                     telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
         //                     (float)telemetry.errors*100.0f/telemetry.reads);
         // }
-        Serial2.printf("%d %.2f ", robot.encoder_left_.get(), robot.encoder_left_.percent());
-        Serial2.printf("%d %.2f ", robot.encoder_right_.get(), robot.encoder_right_.percent());
-        Serial2.printf("%d %.2f ", robot.encoder_weapon_.get(), robot.encoder_weapon_.percent());
+        Serial2.printf("%d %.2f %.2f %0.2f %0.2f", robot.encoder_left_.get(), robot.encoder_left_.percent(), robot.left_, robot.left_leg_.pid_target_, robot.left_leg_.motor_out_);
+        //Serial2.printf("%d %.2f ", robot.encoder_right_.get(), robot.encoder_right_.percent());
+        //Serial2.printf("%d %.2f ", robot.encoder_weapon_.get(), robot.encoder_weapon_.percent());
         Serial2.println(radio.isLinkUp());
     }
 }

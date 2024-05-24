@@ -5,8 +5,8 @@ QueenBeeII::QueenBeeII(CrsfSerial& radio, const ChannelArray escs)
       encoder_left_(PIN_SPI0_CS1, 9298, 4353),
       encoder_right_(PIN_SPI0_CS0, 5802, 10758),
       encoder_weapon_(PIN_SPI0_CS2, 4375, 96650),
-      left_leg_(encoder_left_, DS3, 2000, 1500),
-      right_leg_(encoder_right_, DS2, 1500, 2000)
+      left_leg_(encoder_left_, DS3, 1500, 2000),
+      right_leg_(encoder_right_, DS2, 2000, 1500)
       {}
 
 void QueenBeeII::init() {
@@ -52,24 +52,20 @@ void QueenBeeII::update() {
         ch2_in = radio_.getChannel(2);
         if (ch1_in > 1485 && ch1_in < 1515) ch1_in = 1500;  // Add a small deadband
         if (ch2_in > 1485 && ch2_in < 1515) ch2_in = 1500;  // Add a small deadband
+        left_ = (float)(ch2_in-1500)/500.0f;
+        right_ = (float)(ch1_in-1500)/500.0f;
 
     } else {  // radio is down
-        // left_ = 0.0f;
-        // right_ = 0.0f;
-        // left_v_ = 0.0f;
-        // right_v_ = 0.0f;
-        // v_ = 0.0f;
-        // w_ = 0.0f;
+        left_ = 0.0f;
+        right_ = 0.0f;
     }
 
     // save old values (for acceleration calculations)
-    // last_v_ = v_;
-    // last_w_ = w_;
-    // last_left_ = left_;
-    // last_right_ = right_;
+    last_left_ = left_;
+    last_right_ = right_;
 
-    left_leg_.update();
-    right_leg_.update();
+    left_leg_.update(left_);
+    right_leg_.update(right_);
 
     LEDs();
 
@@ -78,12 +74,17 @@ void QueenBeeII::update() {
 void QueenBeeII::output() {
     Robot::output();
 
+    // encoders done on fast timer
     encoder_left_.update();
     encoder_right_.update();
     encoder_weapon_.update();
 
-    left_leg_.raiseLeg((millis()/1000) % 3 == 0);
-    right_leg_.raiseLeg((millis()/1000) % 3 == 0);
+    // pid calculation done on fast timer too
+    left_leg_.update(left_, !radio_.isLinkUp());
+    right_leg_.update(right_, !radio_.isLinkUp());
+
+    // left_leg_.raiseLeg((millis()/1000) % 3 == 0);
+    // right_leg_.raiseLeg((millis()/1000) % 3 == 0);
 
     left_leg_.output();
     right_leg_.output();
@@ -93,11 +94,8 @@ void QueenBeeII::output() {
             if (millis()< 2500) esc.setCommand(0);  // 1046 is the example command
             esc.setCommand(13);  // extended telemetry enable
         }
-    } else if (millis() < 4000) {
-        escs_[0].setThrottle3D(0.1);
-        escs_[1].setThrottle3D(0.1);
     } else {
-        escs_[0].setThrottle3D(left_);
-        escs_[1].setThrottle3D(right_);
+        escs_[0].setThrottle3D(left_leg_.motor_out_);
+        escs_[1].setThrottle3D(right_leg_.motor_out_);
     }
 }
