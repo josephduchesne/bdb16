@@ -4,7 +4,7 @@
 #include <SoftwareSerial.h>
 #include <VescUart.h>
 
-SoftwareSerial vesc_serial(/* rx */ 0, /* tx */ 1);
+SoftwareSerial vesc_serial(0xff, /* tx */ 1);
 VescUart vesc(10 /*ms timeout*/);
 
 

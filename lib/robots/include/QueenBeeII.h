@@ -6,13 +6,15 @@
 #include <FastLED.h>
 #include <FastLED.h>
 #include <mechanics/Leg2D.h>
+#include <mechanics/Hammer.h>
 #include "Robot.h"
 #include <encoder.h>
+#include <SoftwareSerial.h>
 
 class QueenBeeII : public Robot
 {
 public:
-    QueenBeeII(CrsfSerial& radio, const ChannelArray escs);
+    QueenBeeII(CrsfSerial& radio, const ChannelArray escs, SoftwareSerial& serial);
 
     void init();
     void update();
@@ -27,10 +29,8 @@ public:
 
     float left_ = 0;
     float right_ = 0;
-    float left_v_ = 0;
-    float right_v_ = 0;
-    float last_left_ = 0;
-    float last_right_ = 0;
+    bool fire_hammer_ = false;
+    bool fire_self_right_ = false;
 
     const uint8_t weapon_cs_ = PIN_SPI0_CS0;
     const uint8_t left_encoder_cs_ = PIN_SPI0_CS1;
@@ -41,6 +41,7 @@ public:
     Encoder encoder_weapon_;
     Leg2D left_leg_;
     Leg2D right_leg_;
+    Hammer hammer_;
 
 private:
     int telemetry_counter_ = 0;

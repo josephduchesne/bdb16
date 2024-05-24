@@ -4,6 +4,7 @@
 #include <dshot/esc.h>
 #include <functional>   // std::reference_wrapper
 #include <CrsfSerial.h>
+#include <SoftwareSerial.h>
 
 static volatile bool alarm_fired;
 volatile float left, right;
@@ -12,15 +13,18 @@ struct repeating_timer timer;
 
 CrsfSerial radio(Serial1, CRSF_BAUDRATE);
 
+SoftwareSerial serial_hammer(0xFF, /* tx */ 1);
+
 constexpr uint64_t print_interval   = 250;  // 250ms interval, 4Hz
 constexpr uint64_t update_interval  = 10;   // 10ms interval, 100Hz
 constexpr uint64_t log_interval     = 20;   // 20ms interval, 50Hz
 
 QueenBeeII robot(  radio,
                     {
-                        DShot::ESC(DS1, pio0, DShot::Type::Normal, DShot::Speed::DS600, 14, 0.5f, true),  // left drive
-                        DShot::ESC(DS0, pio0, DShot::Type::Normal, DShot::Speed::DS600, 14, 0.5f, true), // right drive
-                    }
+                        DShot::ESC(DS1, pio1, DShot::Type::Normal, DShot::Speed::DS600, 14, 1.0f, true),  // left drive
+                        DShot::ESC(DS0, pio1, DShot::Type::Normal, DShot::Speed::DS600, 14, 1.0f, true), // right drive
+                    },
+                    serial_hammer
                     );
 
 unsigned long packets = 0;
@@ -36,11 +40,14 @@ bool __isr repeating_timer_callback(struct repeating_timer *t) {
 void setup() {
     BDB16::init(robot);
     // FlashLog::Setup();
+    serial_hammer.begin(115200);
     robot.init();
 
     radio.onPacketChannels = &packetChannels;
     Serial1.setFIFOSize(64);
     Serial1.begin(CRSF_BAUDRATE, SERIAL_8N1);
+    
+    
     
     // Negative delay so means we will call repeating_timer_callback, and call it again
     // 500ms later regardless of how long the callback took to execute
@@ -76,8 +83,8 @@ void loop() {
         //                     telemetry.volts_cV/100, telemetry.volts_cV%100, telemetry.amps_A, 
         //                     (float)telemetry.errors*100.0f/telemetry.reads);
         // }
-        Serial2.printf("%d %.2f %.2f %0.2f %0.2f", robot.encoder_left_.get(), robot.encoder_left_.percent(), robot.left_, robot.left_leg_.pid_target_, robot.left_leg_.motor_out_);
-        //Serial2.printf("%d %.2f ", robot.encoder_right_.get(), robot.encoder_right_.percent());
+        Serial2.printf("R: %d %.2f %.2f %0.2f %0.2f; ", robot.encoder_right_.get(), robot.encoder_right_.percent(), robot.right_, robot.right_leg_.pid_target_, robot.right_leg_.motor_out_);
+        Serial2.printf("L: %d %.2f %.2f %0.2f %0.2f Radio: ", robot.encoder_left_.get(), robot.encoder_left_.percent(), robot.left_, robot.left_leg_.pid_target_, robot.left_leg_.motor_out_);
         //Serial2.printf("%d %.2f ", robot.encoder_weapon_.get(), robot.encoder_weapon_.percent());
         Serial2.println(radio.isLinkUp());
     }

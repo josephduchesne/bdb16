@@ -1,12 +1,13 @@
 #include "QueenBeeII.h"
 
-QueenBeeII::QueenBeeII(CrsfSerial& radio, const ChannelArray escs) 
+QueenBeeII::QueenBeeII(CrsfSerial& radio, const ChannelArray escs, SoftwareSerial& serial) 
     : Robot(radio, escs),
-      encoder_left_(PIN_SPI0_CS1, 9298, 4353),
-      encoder_right_(PIN_SPI0_CS0, 5802, 10758),
+      encoder_left_(PIN_SPI0_CS1, 9298-182, 4353+182), // 182 is 4 degrees (4/360*2^14)
+      encoder_right_(PIN_SPI0_CS0, 5802+182, 10758-182),
       encoder_weapon_(PIN_SPI0_CS2, 4375, 96650),
       left_leg_(encoder_left_, DS3, 1500, 2000),
-      right_leg_(encoder_right_, DS2, 2000, 1500)
+      right_leg_(encoder_right_, DS2, 2000, 1500),
+      hammer_(encoder_weapon_, serial)
       {}
 
 void QueenBeeII::init() {
@@ -17,7 +18,7 @@ void QueenBeeII::init() {
 
     left_leg_.init();
     right_leg_.init();
-    encoder_weapon_.init();
+    hammer_.init();
 
     // set weapon encoder CS high
     
@@ -55,17 +56,15 @@ void QueenBeeII::update() {
         left_ = (float)(ch2_in-1500)/500.0f;
         right_ = (float)(ch1_in-1500)/500.0f;
 
+        fire_hammer_ = radio_.getChannel(4) > 1500;
+        fire_self_right_ = radio_.getChannel(3) > 1500;
+
     } else {  // radio is down
         left_ = 0.0f;
         right_ = 0.0f;
+        fire_hammer_ = false;
+        fire_self_right_ = false;
     }
-
-    // save old values (for acceleration calculations)
-    last_left_ = left_;
-    last_right_ = right_;
-
-    left_leg_.update(left_);
-    right_leg_.update(right_);
 
     LEDs();
 
@@ -82,9 +81,7 @@ void QueenBeeII::output() {
     // pid calculation done on fast timer too
     left_leg_.update(left_, !radio_.isLinkUp());
     right_leg_.update(right_, !radio_.isLinkUp());
-
-    // left_leg_.raiseLeg((millis()/1000) % 3 == 0);
-    // right_leg_.raiseLeg((millis()/1000) % 3 == 0);
+    hammer_.update(fire_hammer_, fire_self_right_, !radio_.isLinkUp());
 
     left_leg_.output();
     right_leg_.output();

@@ -29,7 +29,7 @@ public:
     uint64_t action_start_ = 0;
     float cycle_target_ = 0.0f;
 
-    const float Kp_ = 0.1f;
+    const float Kp_ = 0.05f;
     const float Ki_ = 0.0f;
     const float Kd_ = 0;
 

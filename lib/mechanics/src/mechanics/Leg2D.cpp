@@ -43,7 +43,7 @@ void Leg2D::SetAction(Leg2D::Action new_action_) {
 }
 
 bool Leg2D::ActionTimeout() {
-    auto& max_time = MaxActionTimes_[(uint)action_];
+    uint64_t max_time = MaxActionTimes_[(uint)action_];
 
     if (max_time == 0) return false; // no timeout
 
@@ -100,7 +100,7 @@ void Leg2D::update(float throttle, bool hard_stop) {
             if (ActionTimeout()) SetAction(Leg2D::Action::pid);
 
             break;
-        case Leg2D::Action::stop:  // fallthrough
+        case Leg2D::Action::stop:
             if (!hard_stop) {
                 SetAction(Leg2D::Action::pid);
             }
