@@ -24,8 +24,8 @@ public:
         {0, 0, 350, 290, 150, 250, 100}  // ms per SelfRight esc mode before it goes next
     };
     const float ActionValues_[(uint)HammerSwing::MAX][(uint)Action::MAX] = {  // output value associated with each action
-        {0, 0, 40.0f /* A */,     0.0, -1000.0f /* RPM*/, -2.0f /*A*/, 0.0},
-        {0, 0, 2000.0f /* RPM */, 0.0, -1000.0f /* RPM*/, -2.0f /*A*/, 0.0},
+        {0, 0, -40.0f /* A */,     0.0, 1000.0f /* RPM*/, 2.0f /*A*/, 0.0},
+        {0, 0, -2000.0f /* RPM */, 0.0, 1000.0f /* RPM*/, 2.0f /*A*/, 0.0},
     };
 
     SoftwareSerial& vesc_serial_;
