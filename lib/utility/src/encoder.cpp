@@ -44,6 +44,7 @@ int32_t Encoder::update() {
 
     // if absolute, just return the raw result
     if (absolute_) {
+        last_value_ = result;
         return result;
     }
 
