@@ -3,11 +3,12 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-Encoder::Encoder(uint8_t cs_pin, uint32_t min_val, uint32_t max_val) 
+Encoder::Encoder(uint8_t cs_pin, uint32_t min_val, uint32_t max_val, bool absolute) 
 : 
     cs_pin_(cs_pin),
     min_val_(min_val),
-    max_val_(max_val)
+    max_val_(max_val),
+    absolute_(absolute)
 {
 
 }
@@ -41,6 +42,11 @@ int32_t Encoder::update() {
     //Serial2.printf("Encoder Value 0x%04x\n", result & 0x3FFF);
     result = result & 0x3FFF; //result;
 
+    // if absolute, just return the raw result
+    if (absolute_) {
+        return result;
+    }
+
     // account for zero crossings
     
     int32_t delta;
@@ -51,8 +57,8 @@ int32_t Encoder::update() {
     } else {
         delta = last_value_-(int32_t)result;
         // ~180 degrees in one delta, indicates zero crossing
-        if (delta>8192) zero_crossings_++;
-        if (delta<-8192) zero_crossings_--;
+        if (delta>8191) zero_crossings_++;
+        if (delta<-8191) zero_crossings_--;
     }
 
     last_value_ = (int32_t) result;

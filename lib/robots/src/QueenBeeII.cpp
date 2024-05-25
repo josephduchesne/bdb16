@@ -2,8 +2,8 @@
 
 QueenBeeII::QueenBeeII(CrsfSerial& radio, const ChannelArray escs, SoftwareSerial& serial) 
     : Robot(radio, escs),
-      encoder_left_(PIN_SPI0_CS1, 9298-182, 4353+182), // 182 is 4 degrees (4/360*2^14)
-      encoder_right_(PIN_SPI0_CS0, 5802+182, 10758-182),
+      encoder_left_(PIN_SPI0_CS1, 9298-182, 4353+182, /*absolute*/ true), // 182 is 4 degrees (4/360*2^14)
+      encoder_right_(PIN_SPI0_CS0, 5802+182, 10758-182, /*absolute*/ true),
       encoder_weapon_(PIN_SPI0_CS2, 4375, 96650),
       left_leg_(encoder_left_, DS3, 1500, 2000),
       right_leg_(encoder_right_, DS2, 2000, 1500),

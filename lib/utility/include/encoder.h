@@ -4,7 +4,7 @@
 
 class Encoder {
 public:
-    Encoder(uint8_t cs_pin, uint32_t min_val, uint32_t max_val);
+    Encoder(uint8_t cs_pin, uint32_t min_val, uint32_t max_val, bool absolute=false);
 
     void init();
 
@@ -19,6 +19,7 @@ public:
     int32_t max_val_;
     const uint8_t cs_pin_;
     bool first_read = true;
+    bool absolute_;
 
     // state
     int32_t zero_crossings_ = 0;
