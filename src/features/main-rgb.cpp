@@ -3,7 +3,7 @@
 // based on https://github.com/FastLED/FastLED/blob/master/examples/Fire2012/Fire2012.ino
 
 #include <FastLED.h>
-#define NUM_LEDS 25
+#define NUM_LEDS 16
 
 CRGB leds[NUM_LEDS];
 
@@ -88,8 +88,8 @@ void loop() {
 
 
   //Fire2012(); // run simulation frame
-  bpm();
-  //fill_rainbow( leds, NUM_LEDS, gHue, 7);
+  // bpm();
+  fill_rainbow( leds, NUM_LEDS, gHue, 7);
 
   //addGlitter(20);
 

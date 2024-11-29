@@ -30,9 +30,9 @@ DifferentialModel model(
 
 FinalStrike robot(  radio,
                     {
-                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, true),  // left drive
-                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive
-                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
+                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, true),  // left drive, 14 pole, 100% scaling, inverted
+                        DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 14, 1.0f, false), // right drive, 14 pole, 100% scaling, normal
+                        DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon, 12 pole, 100% scaling, normal
                     },
                     model,
                     1.0f   // 1.0 second spin up speed limit (1/acceleration cap for drum)

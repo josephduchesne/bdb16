@@ -2,7 +2,7 @@
 
 #include <107-Arduino-Servo-RP2040.h>
 #include <encoder.h>
-#include "QuickPID.h"
+#include <QuickPID.h>
 
 class Leg2D
 {
