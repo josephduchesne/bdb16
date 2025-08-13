@@ -32,7 +32,7 @@ DifferentialModel model(
 
 FirstStrike robot(  radio, 
                     {
-                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // left drive
+                        DShot::ESC(DS1, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, true), // left drive
                         DShot::ESC(DS3, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false), // right drive
                         DShot::ESC(DS2, pio0, DShot::Type::Bidir, DShot::Speed::DS600, 12, 1.0f, false)  // weapon
                     },
@@ -52,7 +52,7 @@ bool __isr repeating_timer_callback(struct repeating_timer *t) {
 
 void setup() {
     BDB16::init(robot);
-    FlashLog::Setup();
+    //FlashLog::Setup();
     robot.init();
 
     radio.onPacketChannels = &packetChannels;
@@ -86,19 +86,19 @@ void loop() {
     // Todo: Capture last telemetry time / time out telemetry validity
 
     // update FlashLog
-    if (now-last_log > log_interval) {
-        last_log = now;
-        FlashLog::WriteBasic(BDB16::read_voltage_mV(), radio.isLinkUp(), 
-            {(uint16_t)radio.getChannel(1), (uint16_t)radio.getChannel(2), (uint16_t)radio.getChannel(3),
-            (uint16_t)radio.getChannel(4), (uint16_t)radio.getChannel(5), (uint16_t)radio.getChannel(6)},
-            {robot.escs_[0].output, robot.escs_[1].output, robot.escs_[2].output, 0}
-            );
-        for(auto& esc : robot.escs_) {
-            DShot::Telemetry& telemetry = esc.telemetry;
-            FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A,
-                               telemetry.debug1, telemetry.debug2, telemetry.stress, telemetry.status);
-        }
-    }
+    // if (now-last_log > log_interval) {
+    //     last_log = now;
+    //     FlashLog::WriteBasic(BDB16::read_voltage_mV(), radio.isLinkUp(), 
+    //         {(uint16_t)radio.getChannel(1), (uint16_t)radio.getChannel(2), (uint16_t)radio.getChannel(3),
+    //         (uint16_t)radio.getChannel(4), (uint16_t)radio.getChannel(5), (uint16_t)radio.getChannel(6)},
+    //         {robot.escs_[0].output, robot.escs_[1].output, robot.escs_[2].output, 0}
+    //         );
+    //     for(auto& esc : robot.escs_) {
+    //         DShot::Telemetry& telemetry = esc.telemetry;
+    //         FlashLog::WriteESC(micros(), esc.pio_sm, telemetry.rpm, telemetry.temperature_C, telemetry.volts_cV, telemetry.amps_A,
+    //                            telemetry.debug1, telemetry.debug2, telemetry.stress, telemetry.status);
+    //     }
+    // }
 
     if (now-last_print > print_interval) {
         last_print = now;
