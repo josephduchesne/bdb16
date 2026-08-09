@@ -7,7 +7,7 @@
 namespace BDB16 {
 
     // Reboots if no radio link or no ESC telemetry has been seen for this long
-    inline constexpr uint32_t WATCHDOG_TIMEOUT_MS = 3000;
+    inline constexpr uint32_t WATCHDOG_TIMEOUT_MS = 5000;
     // How often the watchdog condition is checked
     inline constexpr uint32_t WATCHDOG_CHECK_INTERVAL_MS = 100;
 
@@ -66,7 +66,7 @@ namespace BDB16 {
         analogReadResolution(12);
         pinMode(PIN_VSENSE, INPUT);
 
-        watchdog_init(robot);
+        // watchdog_init(robot);
     }
 
     uint16_t read_voltage_mV() {

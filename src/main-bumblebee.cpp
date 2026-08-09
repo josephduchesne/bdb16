@@ -20,13 +20,13 @@ constexpr uint64_t update_interval  = 10;   // 10ms interval, 100Hz
 constexpr uint64_t log_interval     = 20;   // 20ms interval, 50Hz
 
 DifferentialModel model(
-        0.055f,         // wheel diameter (m)
-        0.130f,         // wheel separation (m)
+        0.0545f,        // wheel diameter (m)
+        0.147f,         // wheel separation (m)
         1400.0f/5.0f,   // effective kV (kV/gear reduction), 1/5 gear reduction
         16.8f,          // Nominal Vbatt (V)
         5.3f,           // max velocity (m/s)
         8.47f,          // max acceleration (m/s^2)
-        25.2f,          // max angular velocity (rad/s)
+        18.2f,          // max angular velocity (rad/s) - scaled for 147mm track vs FirstStrike's 102.2mm
         111.4f          // max angular acceleration (rad/s^2)
     );
 
